@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "fast-api-sso-saml-okta"
+version = "0.1.0"
+description = ""
+authors = ["Andrey Mostopalov <mostopalov@gmail.com>"]
+readme = "README.md"
+packages = [{include = "fast_api_sso_saml_okta"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.101.1"
+uvicorn = "^0.23.2"
+python3-saml = "^1.15.0"
+pysaml2 = "^7.4.2"
+python-multipart = "^0.0.6"
+itsdangerous = "^2.1.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
