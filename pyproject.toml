@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["Andrey Mostopalov <mostopalov@gmail.com>"]
 readme = "README.md"
-packages = [{include = "fast_api_sso_saml_okta"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
