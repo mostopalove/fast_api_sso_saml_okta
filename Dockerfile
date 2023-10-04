@@ -1,4 +1,4 @@
-FROM python:3.10 as python-base
+FROM python:3.10-slim as python-base
 
 # SET ENV #
 ENV PYTHONBUFFERED=1 \
@@ -12,6 +12,8 @@ ENV PYTHONBUFFERED=1 \
 
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
+RUN apt-get update && apt-get install pkg-config libxml2-dev libxmlsec1-dev libxmlsec1-openssl gcc -y
+
 FROM python-base as builder-base
 
 RUN apt-get update && apt-get install --no-install-recommends -y curl \
@@ -23,7 +25,6 @@ ARG APP_TO_BUILD
 
 WORKDIR $PYSETUP_PATH
 
-RUN apt-get install pkg-config libxml2-dev libxmlsec1-dev libxmlsec1-openssl -y
 
 COPY poetry.lock pyproject.toml ./
 

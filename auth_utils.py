@@ -10,7 +10,7 @@ async def prepare_from_fastapi_request(request: Request):
     form_data = await request.form()
 
     rv = {
-        "http_host": request.client.host,
+        "http_host": request.url.hostname,
         "server_port": request.url.port,
         "script_name": request.url.path,
         "post_data": {},

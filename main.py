@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Request, Depends, HTTPException, status, Response
 from fastapi.responses import RedirectResponse
+from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from onelogin.saml2.auth import OneLogin_Saml2_Auth, OneLogin_Saml2_Error
 
@@ -7,13 +8,22 @@ from auth_utils import SessionChecker, prepare_from_fastapi_request
 from saml_constants import OKTA_SSO_URL, SAML_SETTINGS, USER_DATA_KEY, SESSION_SECRET_KEY, SESSION_COOKIE_KEY
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://your-frontend-application.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
 twelve_hours_in_seconds = 12 * 60 * 60
 app.add_middleware(SessionMiddleware,
                    secret_key=SESSION_SECRET_KEY,
                    session_cookie=SESSION_COOKIE_KEY,
-                   max_age=twelve_hours_in_seconds)
+                   max_age=twelve_hours_in_seconds,
+                   same_site="none",
+                   https_only=True)
 
 
 @app.get("/sso/login")
@@ -38,8 +48,10 @@ async def sso_acs(request: Request):
     except OneLogin_Saml2_Error as e:
         raise HTTPException(status_code=403, detail=f"An error occurred: {e}")
 
-    return {"message": "Authenticated"}
-    # return RedirectResponse('/protected-resource', status_code=status.HTTP_302_FOUND)
+    # redirect to the same domain works
+    return RedirectResponse('/protected-resource', status_code=status.HTTP_302_FOUND)
+    # but redirect to another won't pass session cookie
+    # return RedirectResponse('https://your-frontend-application.com', status_code=status.HTTP_302_FOUND)
 
 
 @app.get("/protected-resource", dependencies=[Depends(SessionChecker())])
